@@ -1,59 +1,12 @@
 "use client"
-import { useEffect, useState } from 'react'
 import dynamic from 'next/dynamic'
+import { usePollStream } from '@/app/hooks/usePollStream'
 
 const Cloud = dynamic(() => import('@/components/Cloud'), { ssr: false })
 
 export default function PresentationPage() {
-  const [words, setWords] = useState<{ text: string; value: number }[]>([])
-  const [question, setQuestion] = useState('')
-
-  useEffect(() => {
-    let es: EventSource | null = null;
-
-    function connect() {
-      // Initial fetch
-      fetch('/api/poll/current').then(async (r) => {
-        if (r.ok) {
-          const data = await r.json()
-          if (data.poll) setQuestion(data.poll.question)
-          if (data.cloud) setWords(data.cloud)
-        }
-      })
-
-      es = new EventSource('/api/stream')
-      es.onmessage = (ev) => {
-        try {
-          const payload = JSON.parse(ev.data)
-          if (payload.type === 'cloud') setWords(payload.data)
-          if (payload.type === 'poll') setQuestion(payload.data?.question || '')
-        } catch {}
-      }
-      es.onerror = () => {
-        es?.close()
-        // Try to reconnect in 3s
-        setTimeout(connect, 3000)
-      }
-    }
-
-    connect()
-
-    // Fallback: Poll every 2 seconds to ensure data is fresh even if SSE fails
-    const interval = setInterval(() => {
-      fetch('/api/poll/current').then(async (r) => {
-        if (r.ok) {
-          const data = await r.json()
-          if (data.poll) setQuestion(data.poll.question)
-          if (data.cloud) setWords(data.cloud)
-        }
-      })
-    }, 2000)
-
-    return () => {
-      es?.close()
-      clearInterval(interval)
-    }
-  }, [])
+  const { poll, cloud } = usePollStream()
+  const question = poll?.question || ''
 
   if (!question) {
     return (
@@ -91,7 +44,7 @@ export default function PresentationPage() {
         <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[600px] h-[600px] bg-blue-600/10 rounded-full blur-[100px] animate-pulse"></div>
         
         <div className="relative w-full h-full flex items-center justify-center">
-           <Cloud words={words} />
+           <Cloud words={cloud} />
         </div>
       </div>
 
