@@ -1,1 +1,1 @@
-export { aggregateCloudForPoll } from '../lib/words'
+export { aggregateCloudForPoll } from '@/app/lib/words'

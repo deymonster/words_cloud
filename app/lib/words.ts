@@ -34,6 +34,11 @@ export function tokenize(text: string) {
   return tokens
 }
 
+export interface Word {
+  text: string
+  value: number
+}
+
 export function aggregateCloudForPoll(responses: Response[]) {
   const freq = new Map<string, number>()
   for (const r of responses) {

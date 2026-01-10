@@ -3,15 +3,17 @@ version: '3.8'
 
 services:
   words-cloud:
-    image: ${DOCKER_IMAGE:-words-cloud-service:latest}
+    image: ${DOCKER_IMAGE}
     container_name: words-cloud-app
     restart: unless-stopped
     ports:
       - "3000:3000"
+    env_file:
+      - .env
     environment:
       - DATABASE_URL=file:/app/prisma/data/prod.db
-      - APP_URL=https://${DOMAIN:-localhost}
-      - ADMIN_SECRET=${ADMIN_SECRET:-admin123}
+      - APP_URL=https://${DOMAIN}
+      # ADMIN_SECRET берется автоматически из .env файла
     volumes:
       - ./prisma/data:/app/prisma/data
     # We need to run migrations. 

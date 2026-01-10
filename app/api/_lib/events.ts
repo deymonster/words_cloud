@@ -1,1 +1,1 @@
-export { addSubscriber, removeSubscriber, broadcastCloud, broadcastPoll } from '../lib/events'
+export { addSubscriber, removeSubscriber, broadcastCloud, broadcastPoll } from '@/app/lib/events'

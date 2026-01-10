@@ -1,12 +1,18 @@
 version: '3.8'
+
 services:
   app:
-    build: .
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: words-cloud-service:local
+    container_name: words-cloud-local
     ports:
       - "3000:3000"
+    env_file:
+      - .env
     environment:
-      - ADMIN_SECRET=${ADMIN_SECRET}
-      - DATABASE_URL=file:/app/data/prod.db
+      - ADMIN_SECRET=${ADMIN_SECRET:-admin123}
+      - DATABASE_URL=file:/app/prisma/data/prod.db
     volumes:
-      - ./data:/app/data
-
+      - ./prisma/data:/app/prisma/data

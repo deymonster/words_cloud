@@ -2,6 +2,7 @@ import prisma from '../../../lib/prisma'
 import { NextResponse } from 'next/server'
 import { aggregateCloudForPoll } from '../../../lib/words'
 export const runtime = 'nodejs'
+export const dynamic = 'force-dynamic'
 
 export async function GET() {
   const poll = await prisma.poll.findFirst({ where: { status: 'ACTIVE' }, include: { responses: true } })
