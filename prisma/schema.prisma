@@ -1,0 +1,27 @@
+datasource db {
+  provider = "sqlite"
+  url      = env("DATABASE_URL")
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+model Poll {
+  id          String     @id @default(cuid())
+  question    String
+  status      String     @default("INACTIVE")
+  createdAt   DateTime   @default(now())
+  finalizedAt DateTime?
+  responses   Response[]
+}
+
+model Response {
+  id        String   @id @default(cuid())
+  pollId    String
+  poll      Poll     @relation(fields: [pollId], references: [id])
+  name      String
+  text      String
+  createdAt DateTime @default(now())
+}
+
