@@ -1,0 +1,30 @@
+
+version: '3.8'
+
+services:
+  words-cloud:
+    image: ${DOCKER_IMAGE:-words-cloud-service:latest}
+    container_name: words-cloud-app
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=file:/app/prisma/data/prod.db
+      - APP_URL=https://${DOMAIN:-localhost}
+      - ADMIN_SECRET=${ADMIN_SECRET:-admin123}
+    volumes:
+      - ./prisma/data:/app/prisma/data
+    # We need to run migrations. 
+    # Since the standalone build doesn't easy allow 'npx prisma migrate deploy',
+    # we might need to change the Dockerfile to include full node_modules OR
+    # use a separate migrate service (recommended).
+    # But for SQLite, we can just hack it by using a custom entrypoint if we had the CLI.
+    # ALTERNATIVE: Use a separate container just for migration using the same image if it has the CLI?
+    # Our 'runner' stage in Dockerfile is slim.
+    # Let's adjust Dockerfile to be 'non-standalone' for easier maintenance if user wants simplicity,
+    # OR better: Add 'prisma' to the runner image.
+    
+    # For now, let's assume the user will run migration manually or we use a start script.
+    # To make it robust, I will update Dockerfile to keep necessary tools.
+
+  # Optional: Nginx is managed externally by Proxy Manager as per user request.

@@ -7,21 +7,29 @@ type Word = { text: string; value: number }
 export default function Cloud({ words, width = 800, height = 400 }: { words: Word[]; width?: number; height?: number }) {
   const [layout, setLayout] = useState<{ x: number; y: number; rotate: number; text: string; size: number }[]>([])
   const containerRef = useRef<HTMLDivElement | null>(null)
+  
+  // Use a fixed internal aspect ratio for the cloud generation to ensure consistent oval shape
+  // 2:1 aspect ratio forces an oval shape (wider than tall)
+  const internalWidth = 1000
+  const internalHeight = 500
 
   const sized = useMemo(() => {
     if (words.length === 0) return []
     const max = Math.max(1, ...words.map(w => w.value))
     const min = Math.min(...words.map(w => w.value))
     
-    // If all words have the same frequency (e.g. 1), pick a medium size
+    // Scale font sizes based on the internal canvas size
+    // Slightly reduced max size to ensure better packing within the oval height
+    const minSize = 15
+    const maxSize = 90
+
     if (max === min) {
-       return words.map(w => ({ ...w, size: 60 }))
+       return words.map(w => ({ ...w, size: (minSize + maxSize) / 2 }))
     }
 
-    // Otherwise scale between 30 and 100
     return words.map(w => ({ 
       ...w, 
-      size: Math.max(30, Math.min(100, 30 + ((w.value - min) / (max - min)) * 70)) 
+      size: minSize + ((w.value - min) / (max - min)) * (maxSize - minSize)
     }))
   }, [words])
 
@@ -30,11 +38,11 @@ export default function Cloud({ words, width = 800, height = 400 }: { words: Wor
 
   useEffect(() => {
     const c = cloud()
-      .size([width, height])
+      .size([internalWidth, internalHeight])
       .words(sized.map(w => ({ text: w.text, size: w.size })))
-      .padding(10) // Increase padding slightly to prevent overlap issues
-      .spiral('archimedean')
-      .rotate(() => 0) // No rotation (horizontal only)
+      .padding(5) 
+      .spiral('archimedean') // Archimedean spiral naturally forms a circle/oval given the bounds
+      .rotate(() => 0) 
       .font('Impact, Haettenschweiler, "Arial Narrow Bold", sans-serif')
       .fontSize((d: any) => d.size)
       .on('end', (out: any[]) => {
@@ -42,12 +50,17 @@ export default function Cloud({ words, width = 800, height = 400 }: { words: Wor
       })
     c.start()
     return () => { c.stop() }
-  }, [sized, width, height])
+  }, [sized])
 
   return (
     <div ref={containerRef} className="relative w-full h-full flex items-center justify-center">
-      <svg width={width} height={height} viewBox={`0 0 ${width} ${height}`} className="max-w-full h-auto">
-        <g transform={`translate(${width / 2},${height / 2})`}>
+      <svg 
+        viewBox={`0 0 ${internalWidth} ${internalHeight}`} 
+        preserveAspectRatio="xMidYMid meet"
+        className="w-full h-full max-w-full max-h-full"
+        style={{ overflow: 'visible' }} // Allow slight overflows if any, but viewBox should handle it
+      >
+        <g transform={`translate(${internalWidth / 2},${internalHeight / 2})`}>
           {layout.map((w, i) => (
             <text 
               key={`${w.text}-${i}`} 

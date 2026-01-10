@@ -104,86 +104,107 @@ export default function AdminPage() {
 
   if (!isAuthorized) {
     return (
-      <div className="max-w-md mx-auto mt-20 p-6 card rounded-xl">
-        <h1 className="text-2xl font-bold mb-6 text-center">Вход для администратора</h1>
+      <div className="max-w-md mx-auto mt-20 p-8 card rounded-2xl shadow-2xl backdrop-blur-xl bg-white/5 border border-white/10">
+        <div className="flex justify-center mb-6">
+          <div className="w-16 h-16 rounded-full bg-blue-500/20 flex items-center justify-center">
+            <svg xmlns="http://www.w3.org/2000/svg" width="32" height="32" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" className="text-blue-400"><rect x="3" y="11" width="18" height="11" rx="2" ry="2"></rect><path d="M7 11V7a5 5 0 0 1 10 0v4"></path></svg>
+          </div>
+        </div>
+        <h1 className="text-3xl font-bold mb-8 text-center bg-clip-text text-transparent bg-gradient-to-r from-blue-400 to-indigo-400">Вход для администратора</h1>
         <form onSubmit={handleLogin}>
-          <div className="mb-4">
-            <label className="block mb-2 opacity-80">Секретный ключ</label>
+          <div className="mb-6">
+            <label className="block mb-2 text-sm uppercase tracking-wider text-blue-200/60 font-semibold">Секретный ключ</label>
             <input 
               type="password"
               value={key} 
               onChange={(e) => setKey(e.target.value)} 
-              className="w-full rounded border border-white/10 bg-transparent px-3 py-2" 
-              placeholder="Введите ключ" 
+              className="w-full rounded-xl border border-white/10 bg-black/20 px-4 py-3 text-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all placeholder-white/20" 
+              placeholder="••••••••" 
             />
           </div>
-          <button type="submit" className="w-full py-2 rounded bg-primary font-bold">Войти</button>
+          <button type="submit" className="w-full py-4 rounded-xl bg-gradient-to-r from-blue-600 to-indigo-600 hover:from-blue-500 hover:to-indigo-500 font-bold text-lg shadow-lg shadow-blue-900/40 transition-all transform hover:scale-[1.02]">Войти в систему</button>
         </form>
       </div>
     )
   }
 
   return (
-    <div className="grid lg:grid-cols-1 gap-8 max-w-3xl mx-auto">
-      <section className="card rounded-xl p-6">
-        <div className="flex justify-between items-center mb-6">
-          <h2 className="text-xl font-semibold">Управление опросом</h2>
-          <div className="flex items-center gap-2">
-            <span className={`w-3 h-3 rounded-full ${poll ? 'bg-green-500 shadow-[0_0_10px_#22c55e]' : 'bg-red-500'}`}></span>
-            <span className="text-sm font-mono opacity-80">{poll ? 'АКТИВЕН' : 'НЕ АКТИВЕН'}</span>
+    <div className="grid lg:grid-cols-1 gap-8 max-w-4xl mx-auto p-4">
+      <section className="card rounded-3xl p-8 border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.3)] bg-gradient-to-b from-white/5 to-transparent">
+        <div className="flex justify-between items-center mb-8 border-b border-white/10 pb-6">
+          <div>
+            <h2 className="text-2xl font-bold bg-clip-text text-transparent bg-gradient-to-r from-white to-blue-200">Панель управления</h2>
+            <p className="text-sm opacity-50 mt-1">Управляйте ходом голосования</p>
+          </div>
+          <div className="flex items-center gap-3 px-4 py-2 rounded-full bg-black/20 border border-white/5">
+            <span className={`w-3 h-3 rounded-full animate-pulse ${poll ? 'bg-green-500 shadow-[0_0_15px_#22c55e]' : 'bg-red-500'}`}></span>
+            <span className={`text-sm font-bold tracking-wider ${poll ? 'text-green-400' : 'text-red-400'}`}>{poll ? 'АКТИВЕН' : 'НЕ АКТИВЕН'}</span>
           </div>
         </div>
 
-        {error && <div className="bg-red-500/20 text-red-200 p-3 rounded mb-4">{error}</div>}
+        {error && (
+          <div className="bg-red-500/10 border border-red-500/20 text-red-200 p-4 rounded-xl mb-6 flex items-center gap-3">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="8" x2="12" y2="12"></line><line x1="12" y1="16" x2="12.01" y2="16"></line></svg>
+            {error}
+          </div>
+        )}
 
-        <div className="mb-6">
-          <label className="block mb-1 opacity-80">Вопрос для аудитории</label>
+        <div className="mb-8">
+          <label className="block mb-3 text-sm uppercase tracking-wider text-blue-200/60 font-semibold">Вопрос для аудитории</label>
           <input 
             value={question} 
             onChange={(e) => setQuestion(e.target.value)} 
-            className="w-full rounded border border-white/10 bg-transparent px-3 py-2 text-lg" 
+            className={`w-full rounded-xl border border-white/10 bg-black/20 px-4 py-4 text-xl focus:outline-none focus:ring-2 focus:ring-blue-500 transition-all ${poll ? 'opacity-50 cursor-not-allowed' : ''}`}
             disabled={!!poll}
+            placeholder="Введите вопрос..."
           />
         </div>
 
         <div className="flex flex-wrap gap-4">
           {!poll ? (
-            <button onClick={startPoll} className="px-6 py-3 rounded bg-green-600 hover:bg-green-500 font-bold transition-colors">
+            <button onClick={startPoll} className="flex-1 py-4 rounded-xl bg-gradient-to-r from-green-600 to-emerald-600 hover:from-green-500 hover:to-emerald-500 font-bold text-lg shadow-lg shadow-green-900/40 transition-all transform hover:scale-[1.02] flex items-center justify-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="5 3 19 12 5 21 5 3"></polygon></svg>
               Запустить опрос
             </button>
           ) : (
-            <button onClick={finalizePoll} className="px-6 py-3 rounded bg-red-600 hover:bg-red-500 font-bold transition-colors">
+            <button onClick={finalizePoll} className="flex-1 py-4 rounded-xl bg-gradient-to-r from-red-600 to-rose-600 hover:from-red-500 hover:to-rose-500 font-bold text-lg shadow-lg shadow-red-900/40 transition-all transform hover:scale-[1.02] flex items-center justify-center gap-2">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="6" y="4" width="4" height="16"></rect><rect x="14" y="4" width="4" height="16"></rect></svg>
               Завершить опрос
             </button>
           )}
         </div>
 
-        <hr className="my-8 border-white/10" />
+        <div className="my-10 h-px bg-gradient-to-r from-transparent via-white/10 to-transparent" />
 
-        <h3 className="text-lg font-semibold mb-4">Инструменты</h3>
-        <div className="flex flex-wrap gap-4">
+        <h3 className="text-lg font-semibold mb-6 text-blue-200/80 uppercase tracking-wider text-sm">Быстрый доступ</h3>
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           <a 
             href="/qr" 
             target="_blank" 
-            className="flex items-center gap-2 px-4 py-2 rounded bg-white/10 hover:bg-white/20 transition-colors"
+            className="group flex items-center justify-center gap-3 px-6 py-4 rounded-xl bg-white/5 hover:bg-white/10 border border-white/5 hover:border-white/20 transition-all"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><path d="M3 14h1v1h-1z"></path><path d="M5 14h1v1h-1z"></path><path d="M3 16h1v1h-1z"></path><path d="M7 16h1v1h-1z"></path><path d="M5 18h1v1h-1z"></path><path d="M3 19h1v1h-1z"></path><path d="M7 19h1v1h-1z"></path><path d="M9 14h1v1h-1z"></path><path d="M9 16h1v1h-1z"></path><path d="M9 18h1v1h-1z"></path></svg>
-            Открыть QR-код
+            <div className="p-2 rounded-lg bg-white/5 group-hover:scale-110 transition-transform">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="3" y="3" width="7" height="7"></rect><rect x="14" y="3" width="7" height="7"></rect><rect x="14" y="14" width="7" height="7"></rect><path d="M3 14h1v1h-1z"></path><path d="M5 14h1v1h-1z"></path><path d="M3 16h1v1h-1z"></path><path d="M7 16h1v1h-1z"></path><path d="M5 18h1v1h-1z"></path><path d="M3 19h1v1h-1z"></path><path d="M7 19h1v1h-1z"></path><path d="M9 14h1v1h-1z"></path><path d="M9 16h1v1h-1z"></path><path d="M9 18h1v1h-1z"></path></svg>
+            </div>
+            <span className="font-semibold">QR-код для участников</span>
           </a>
           <a 
             href="/presentation" 
             target="_blank" 
-            className="flex items-center gap-2 px-4 py-2 rounded bg-blue-600 hover:bg-blue-500 transition-colors"
+            className="group flex items-center justify-center gap-3 px-6 py-4 rounded-xl bg-blue-600/20 hover:bg-blue-600/30 border border-blue-500/30 hover:border-blue-400/50 transition-all"
           >
-            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
-            Открыть Облако (Презентация)
+            <div className="p-2 rounded-lg bg-blue-500/20 group-hover:scale-110 transition-transform">
+              <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect x="2" y="3" width="20" height="14" rx="2" ry="2"></rect><line x1="8" y1="21" x2="16" y2="21"></line><line x1="12" y1="17" x2="12" y2="21"></line></svg>
+            </div>
+            <span className="font-semibold text-blue-200">Экран презентации</span>
           </a>
         </div>
       </section>
       
-      <div className="text-center opacity-50 text-sm">
-        <button onClick={() => { localStorage.removeItem('adminKey'); setIsAuthorized(false); setKey('') }} className="underline hover:text-white">
-          Выйти из админки
+      <div className="text-center opacity-40 text-sm hover:opacity-100 transition-opacity">
+        <button onClick={() => { localStorage.removeItem('adminKey'); setIsAuthorized(false); setKey('') }} className="flex items-center gap-2 mx-auto hover:text-red-400 transition-colors">
+          <svg xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path><polyline points="16 17 21 12 16 7"></polyline><line x1="21" y1="12" x2="9" y2="12"></line></svg>
+          Выйти из системы
         </button>
       </div>
     </div>

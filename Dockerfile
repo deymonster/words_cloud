@@ -1,17 +1,67 @@
-FROM node:20-alpine AS base
+# Base image
+FROM node:18-alpine AS base
+
+# Install dependencies only when needed
+FROM base AS deps
+# Check https://github.com/nodejs/docker-node/tree/b4117f9333da4138b03a546ec926ef50a31506c3#nodealpine to understand why libc6-compat might be needed.
+RUN apk add --no-cache libc6-compat
 WORKDIR /app
 
-COPY package.json package-lock.json* pnpm-lock.yaml* yarn.lock* ./
-RUN npm ci || npm i
+# Install dependencies based on the preferred package manager
+COPY package.json package-lock.json* ./
+RUN npm ci
 
+# Rebuild the source code only when needed
+FROM base AS builder
+WORKDIR /app
+COPY --from=deps /app/node_modules ./node_modules
 COPY . .
-RUN npm run prisma:generate
+
+# Environment variables must be present at build time for static generation
+# But for this app, we mostly use runtime envs. 
+# We disable telemetry.
+ENV NEXT_TELEMETRY_DISABLED 1
+
+# Build Next.js
+RUN npx prisma generate
 RUN npm run build
 
-ENV NODE_ENV=production
-ENV DATABASE_URL="file:/app/data/prod.db"
-RUN mkdir -p /app/data
+# Production image, copy all the files and run next
+FROM base AS runner
+WORKDIR /app
+
+ENV NODE_ENV production
+ENV NEXT_TELEMETRY_DISABLED 1
+
+RUN addgroup --system --gid 1001 nodejs
+RUN adduser --system --uid 1001 nextjs
+
+# Install prisma globally or copy it to run migrations
+# To allow 'npx prisma migrate deploy', we need the prisma CLI.
+# The standalone build only has what's needed for runtime.
+# We will copy the generated client.
+# For SQLite, migration management is tricky in Docker.
+# Simplest approach: Copy full node_modules from deps for the migration script? No, too big.
+# We will install prisma cli in runner just for migration support (it adds ~50MB but worth it for simplicity)
+RUN npm install -g prisma
+
+# Copy necessary files
+COPY --from=builder /app/public ./public
+COPY --from=builder --chown=nextjs:nodejs /app/.next/standalone ./
+COPY --from=builder --chown=nextjs:nodejs /app/.next/static ./.next/static
+COPY --from=builder --chown=nextjs:nodejs /app/prisma ./prisma
+COPY --from=builder --chown=nextjs:nodejs /app/package.json ./package.json
+
+# Create directory for sqlite db
+RUN mkdir -p /app/prisma/data && chown -R nextjs:nodejs /app/prisma
+
+# Switch to user nextjs
+USER nextjs
 
 EXPOSE 3000
-CMD ["npm","run","start"]
 
+ENV PORT 3000
+ENV DATABASE_URL="file:/app/prisma/data/prod.db"
+
+# Startup script to run migrations then start app
+CMD sh -c "npx prisma migrate deploy && node server.js"

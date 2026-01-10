@@ -3,7 +3,7 @@ import type { Response } from '@prisma/client'
 const RU_STOP = new Set(['и','в','на','с','к','по','за','как','что','это','не','да','но','о','от','до','для','из','у','я','мы','они','вы','он','она','оно','так','же','ли','бы','при','над','без','про','или'])
 const EN_STOP = new Set(['the','a','an','and','or','of','to','in','on','for','is','are','was','were','be','been','it','by','with','as','not'])
 
-function tokenize(text: string) {
+export function tokenize(text: string) {
   // Split by comma or newline to preserve phrases
   // If no commas/newlines, treat the whole text as one phrase if it's short (< 50 chars)
   // Otherwise split by space
