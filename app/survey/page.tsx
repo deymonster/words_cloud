@@ -1,64 +1,15 @@
 "use client"
-import { useEffect, useMemo, useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useMemo, useState } from 'react'
 import dynamic from 'next/dynamic'
+import { usePollStream } from '@/app/hooks/usePollStream'
 const Cloud = dynamic(() => import('@/components/Cloud'), { ssr: false })
 
-type CurrentPoll = { id: string; question: string } | null
-
 export default function SurveyPage() {
-  const [poll, setPoll] = useState<CurrentPoll>(null)
   const [step, setStep] = useState(1)
   const [name, setName] = useState('')
   const [answer, setAnswer] = useState('')
-  const [words, setWords] = useState<{ text: string; value: number }[]>([])
   const [error, setError] = useState<string | null>(null)
-
-  useEffect(() => {
-    fetch('/api/poll/current').then(async (r) => {
-      if (r.ok) {
-        const data = await r.json()
-        setPoll(data.poll)
-        setWords(data.cloud || [])
-      }
-    })
-
-    // Fallback: Poll every 2 seconds
-    const interval = setInterval(() => {
-      fetch('/api/poll/current').then(async (r) => {
-        if (r.ok) {
-          const data = await r.json()
-          setPoll(data.poll)
-          setWords(data.cloud || [])
-        }
-      })
-    }, 2000)
-
-    const es = new EventSource('/api/stream')
-    es.onmessage = (ev) => {
-      try {
-        const payload = JSON.parse(ev.data)
-        if (payload.type === 'cloud') setWords(payload.data)
-        if (payload.type === 'poll') setPoll(payload.data)
-      } catch {}
-    }
-    
-    // Auto-reconnect on error
-    es.onerror = () => {
-       es.close()
-       setTimeout(() => {
-          // The useEffect will not re-run to create new ES, but the interval will keep working.
-          // To properly reconnect ES, we'd need more complex logic or just rely on interval.
-          // Since we have interval, we can just let ES die or try to reload page? 
-          // Actually, relying on interval is enough for fallback.
-       }, 3000)
-    }
-
-    return () => {
-      es.close()
-      clearInterval(interval)
-    }
-  }, [])
+  const { poll, cloud } = usePollStream()
 
   const canGoToStep2 = useMemo(() => name.trim().length >= 2, [name])
   const canSubmit = useMemo(() => answer.trim().length >= 2 && !!poll, [answer, poll])
@@ -163,7 +114,7 @@ export default function SurveyPage() {
       <section className="card rounded-3xl p-8 relative min-h-[600px] border border-white/10 shadow-[0_0_100px_rgba(50,50,150,0.2)]">
         <div className="absolute inset-0 -z-10 bg-gradient-to-b from-blue-500/5 to-purple-500/5 rounded-3xl"></div>
         <div className="h-[550px]">
-          <Cloud words={words} width={900} height={550} />
+          <Cloud words={cloud} width={900} height={550} />
         </div>
       </section>
     </div>
