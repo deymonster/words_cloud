@@ -1,6 +1,6 @@
 export default function HomePage() {
   return (
-    <div className="space-y-6">
+    <div className="mx-auto max-w-5xl px-4 py-8 space-y-6">
       <h1 className="text-3xl font-bold">Облако слов Live</h1>
       <p className="opacity-80">QR-код ведёт на страницу опроса. Админ запускает опрос и видит облако слов в реальном времени.</p>
       <div className="flex gap-3">

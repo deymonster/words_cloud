@@ -129,7 +129,7 @@ export default function AdminPage() {
   }
 
   return (
-    <div className="grid lg:grid-cols-1 gap-8 max-w-4xl mx-auto p-4">
+    <div className="grid lg:grid-cols-1 gap-8 max-w-4xl mx-auto px-4 py-8">
       <section className="card rounded-3xl p-8 border border-white/10 shadow-[0_0_50px_rgba(0,0,0,0.3)] bg-gradient-to-b from-white/5 to-transparent">
         <div className="flex justify-between items-center mb-8 border-b border-white/10 pb-6">
           <div>

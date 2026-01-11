@@ -22,8 +22,17 @@ export function usePollStream(options: UsePollStreamOptions = {}) {
       const res = await fetch('/api/poll/current')
       if (!res.ok) return
       const data = await res.json()
-      setPoll(data.poll)
-      setCloud(data.cloud || [])
+      
+      setPoll(prev => {
+        if (JSON.stringify(prev) === JSON.stringify(data.poll)) return prev
+        return data.poll
+      })
+      
+      setCloud(prev => {
+        const newCloud = data.cloud || []
+        if (JSON.stringify(prev) === JSON.stringify(newCloud)) return prev
+        return newCloud
+      })
     } catch {
       // Ignore fetch errors; SSE or next polling tick can recover.
     }
@@ -37,8 +46,18 @@ export function usePollStream(options: UsePollStreamOptions = {}) {
     es.onmessage = (ev) => {
       try {
         const payload = JSON.parse(ev.data)
-        if (payload.type === 'cloud') setCloud(payload.data)
-        if (payload.type === 'poll') setPoll(payload.data)
+        if (payload.type === 'cloud') {
+           setCloud(prev => {
+             if (JSON.stringify(prev) === JSON.stringify(payload.data)) return prev
+             return payload.data
+           })
+        }
+        if (payload.type === 'poll') {
+           setPoll(prev => {
+             if (JSON.stringify(prev) === JSON.stringify(payload.data)) return prev
+             return payload.data
+           })
+        }
       } catch {
         // Ignore malformed payloads.
       }

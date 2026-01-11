@@ -9,9 +9,9 @@ export default function Cloud({ words, width = 800, height = 400, theme = 'dark'
   const containerRef = useRef<HTMLDivElement | null>(null)
   
   // Use a fixed internal aspect ratio for the cloud generation to ensure consistent oval shape
-  // 2:1 aspect ratio forces an oval shape (wider than tall)
-  const internalWidth = 1000
-  const internalHeight = 500
+  // 1:1 aspect ratio forces a more circular/rounded shape (which then fills the container)
+  const internalWidth = 900
+  const internalHeight = 900
 
   const sized = useMemo(() => {
     if (words.length === 0) return []
@@ -31,7 +31,7 @@ export default function Cloud({ words, width = 800, height = 400, theme = 'dark'
       ...w, 
       size: minSize + ((w.value - min) / (max - min)) * (maxSize - minSize)
     }))
-  }, [words])
+  }, [JSON.stringify(words)])
 
   // Palettes
   const darkThemeColors = ["#E53935", "#D81B60", "#8E24AA", "#5E35B1", "#3949AB", "#1E88E5", "#039BE5", "#00ACC1", "#00897B", "#43A047", "#7CB342", "#C0CA33", "#FDD835", "#FFB300", "#FB8C00", "#F4511E"]

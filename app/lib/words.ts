@@ -57,7 +57,7 @@ export function aggregateCloudForPoll(responses: Response[]) {
   
   return Array.from(freq.entries())
     .sort((a,b) => b[1]-a[1])
-    .slice(0, 200)
+    .slice(0, 500)
     .map(([key, value]) => ({ 
       text: key.charAt(0).toUpperCase() + key.slice(1), 
       value 

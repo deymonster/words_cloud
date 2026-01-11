@@ -79,7 +79,7 @@ export default function PresentationPage() {
       <footer className={`fixed bottom-2 right-4 text-[10px] font-mono pointer-events-none ${
         isDarkTheme ? 'text-white/10' : 'text-slate-400'
       }`}>
-        Words Cloud Project
+        Words Cloud Project | Deymonster (Dmitry Popov) | Telegram: @Deymonster
       </footer>
     </div>
   )
