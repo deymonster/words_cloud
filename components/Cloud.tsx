@@ -4,7 +4,7 @@ import cloud from 'd3-cloud'
 
 type Word = { text: string; value: number }
 
-export default function Cloud({ words, width = 800, height = 400 }: { words: Word[]; width?: number; height?: number }) {
+export default function Cloud({ words, width = 800, height = 400, theme = 'dark' }: { words: Word[]; width?: number; height?: number; theme?: 'dark' | 'light' }) {
   const [layout, setLayout] = useState<{ x: number; y: number; rotate: number; text: string; size: number }[]>([])
   const containerRef = useRef<HTMLDivElement | null>(null)
   
@@ -33,8 +33,12 @@ export default function Cloud({ words, width = 800, height = 400 }: { words: Wor
     }))
   }, [words])
 
-  // Vibrant palette
-  const colors = ["#E53935", "#D81B60", "#8E24AA", "#5E35B1", "#3949AB", "#1E88E5", "#039BE5", "#00ACC1", "#00897B", "#43A047", "#7CB342", "#C0CA33", "#FDD835", "#FFB300", "#FB8C00", "#F4511E"]
+  // Palettes
+  const darkThemeColors = ["#E53935", "#D81B60", "#8E24AA", "#5E35B1", "#3949AB", "#1E88E5", "#039BE5", "#00ACC1", "#00897B", "#43A047", "#7CB342", "#C0CA33", "#FDD835", "#FFB300", "#FB8C00", "#F4511E"]
+  // Darker shades for better contrast on light background
+  const lightThemeColors = ["#C62828", "#AD1457", "#6A1B9A", "#4527A0", "#283593", "#1565C0", "#0277BD", "#00838F", "#00695C", "#2E7D32", "#558B2F", "#9E9D24", "#F9A825", "#FF8F00", "#EF6C00", "#D84315"]
+  
+  const colors = theme === 'dark' ? darkThemeColors : lightThemeColors
 
   useEffect(() => {
     const c = cloud()
