@@ -28,17 +28,14 @@
 </div>
 
 ### Интерфейс участника
-<div align="center">
-  <img src="./screenshots/survey_mobile_1.png" width="300" alt="Интерфейс на телефоне" style="border-radius: 20px; border: 4px solid #333;" />
-</div>
 
 <div align="center">
-  <img src="./screenshots/survey_mobile_2.png" width="300" alt="Интерфейс на телефоне" style="border-radius: 20px; border: 4px solid #333;" />
+  <img src="./screenshots/survey_mobile_1.png" width="30%" style="border-radius: 20px; margin: 0 5px;" />
+  <img src="./screenshots/survey_mobile_2.png" width="30%" style="border-radius: 20px; margin: 0 5px;" />
+  <img src="./screenshots/survey_mobile_3.png" width="30%" style="border-radius: 20px; margin: 0 5px;" />
 </div>
 
-<div align="center">
-  <img src="./screenshots/survey_mobile_3.png" width="300" alt="Интерфейс на телефоне" style="border-radius: 20px; border: 4px solid #333;" />
-</div>
+
 
 ### Админ-панель
 <img src="./screenshots/admin_panel.png" width="100%" alt="Admin Panel" />
